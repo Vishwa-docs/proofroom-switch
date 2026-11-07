@@ -1,7 +1,7 @@
 {
   "phase": "recovered",
   "active_version": "v2.13.2",
-  "incident_id": "INC-2048",
+  "incident_id": "INC-A50DA642",
   "baseline": [
     {
       "case": "regular",
@@ -39,7 +39,7 @@
     }
   ],
   "proof": {
-    "incident_id": "INC-2048",
+    "incident_id": "INC-A50DA642",
     "from": "v2.14.0",
     "to": "v2.13.2",
     "baseline": [
@@ -129,48 +129,48 @@
     },
     "baseline_errors": 2,
     "canary_errors": 0,
-    "sha256": "4fe4c0b44065c5676cfdc53fbabef71f4c514478696ead2a4cf961aeeac385a3"
+    "sha256": "eeb57df30b82c52c5cad84287221f7ca1873925f054c7ff78347b5ed74c76e52"
   },
   "decision": {
     "actor_id": "@switch-mattermost-dcc3d422-2738-4edf-8aa4-e6f52879adca-priya:localhost",
-    "evidence_sha256": "4fe4c0b44065c5676cfdc53fbabef71f4c514478696ead2a4cf961aeeac385a3",
-    "at": "2026-11-07T17:43:00+00:00",
+    "evidence_sha256": "eeb57df30b82c52c5cad84287221f7ca1873925f054c7ff78347b5ed74c76e52",
+    "at": "2026-11-07T17:52:47+00:00",
     "action": "promote_allowlisted_release",
     "target": "v2.13.2",
-    "hash": "93c5ac4473cf777be7314cb06ae41fef4521c0f02ccfc50f0fec6fe3ef97d15c"
+    "hash": "b7ffcd20db9176f1453e11a5b093af9488f997e6998c7135803ebdfdad1f06cc"
   },
   "events": [
     {
-      "at": "2026-11-07T17:42:33+00:00",
+      "at": "2026-11-07T17:52:20+00:00",
       "speaker": "Signal Agent",
       "body": "Checkout alert: 2/5 replay cases fail on v2.14.0. Null discounts trigger TypeError. @proofroom-investigator REVIEW the source and challenge this diagnosis. @proofroom-release PREPARE the canary in this room.",
       "kind": "investigation",
       "previous_hash": "0000000000000000000000000000000000000000000000000000000000000000",
-      "hash": "37c3659d1d0b0eb51e1dc1b04f6ba304c3f0dabc95ade5671b0cb90c71bc856c"
+      "hash": "836e187d45f6a0a43108c78d9596f6a7afd4b6948bf8a4a9ca5156deec94208e"
     },
     {
-      "at": "2026-11-07T17:42:33+00:00",
+      "at": "2026-11-07T17:52:20+00:00",
       "speaker": "Release Agent",
-      "body": "Canary passed: 2/5 errors \u2192 0/5; 3 healthy carts unchanged. All 5 policy checks passed. Evidence SHA-256: 4fe4c0b44065c5676cfdc53fbabef71f4c514478696ead2a4cf961aeeac385a3. Authorized on-call: reply APPROVE 4fe4c0b44065c5676cfdc53fbabef71f4c514478696ead2a4cf961aeeac385a3 in this Switch room.",
+      "body": "Canary passed: 2/5 errors \u2192 0/5; 3 healthy carts unchanged. All 5 policy checks passed. Evidence SHA-256: eeb57df30b82c52c5cad84287221f7ca1873925f054c7ff78347b5ed74c76e52. Authorized on-call: reply APPROVE eeb57df30b82c52c5cad84287221f7ca1873925f054c7ff78347b5ed74c76e52 in this Switch room.",
       "kind": "proof",
-      "previous_hash": "37c3659d1d0b0eb51e1dc1b04f6ba304c3f0dabc95ade5671b0cb90c71bc856c",
-      "hash": "4c6b3f1256bf4d9831687953b3c1e77f3119495038c67cc893e7d1a311481bd4"
+      "previous_hash": "836e187d45f6a0a43108c78d9596f6a7afd4b6948bf8a4a9ca5156deec94208e",
+      "hash": "5c4ac79625a29ea112782f5906da4235b696fa6e3dd79616d13b54298a8e88f4"
     },
     {
-      "at": "2026-11-07T17:42:46+00:00",
+      "at": "2026-11-07T17:52:33+00:00",
       "speaker": "Codex Investigator",
-      "body": "Exact cause: v2.14.0 passes `None` discounts directly to `Decimal()`, raising `TypeError` for the `guest` and `gift` fixtures. v2.13.2 normalizes `None` to `\"0.00\"`.\n\nv2.13.2 is a safe rollback under all five deterministic checks: all five cases replay, zero candidate errors, no regression in the three previously healthy cases, the candidate is allowlisted, and the schema is unchanged.\n\nResidual risk: the five fixtures do not cover every possible production cart or integration behavior.",
+      "body": "Cause: v2.14.0 passes `None` discounts for `guest` and `gift` into `Decimal(None)`, raising `TypeError`; v2.13.2 normalizes them to `\"0.00\"`.\n\nRollback to v2.13.2 is safe under all five deterministic checks: five cases replayed, zero candidate errors, no regression in the three healthy cases, candidate allowlisted, and unchanged schema.\n\nResidual risk: the checks cover only five fixtures; they do not verify behavior for other production inputs.",
       "kind": "review",
-      "previous_hash": "4c6b3f1256bf4d9831687953b3c1e77f3119495038c67cc893e7d1a311481bd4",
-      "hash": "127585ba6d2572a48187881055d37109421172c483324d87174300102b4ba78e"
+      "previous_hash": "5c4ac79625a29ea112782f5906da4235b696fa6e3dd79616d13b54298a8e88f4",
+      "hash": "36bf9809e15fcbbbe449f4a4e93da2354ebf8076b405237f33c307c0bf9bdfaf"
     },
     {
-      "at": "2026-11-07T17:43:00+00:00",
+      "at": "2026-11-07T17:52:47+00:00",
       "speaker": "Release Agent",
-      "body": "Rollback applied to v2.13.2. Final replay: 0/5 errors. Decision recorded against evidence 4fe4c0b44065c5676cfdc53fbabef71f4c514478696ead2a4cf961aeeac385a3 by @switch-mattermost-dcc3d422-2738-4edf-8aa4-e6f52879adca-priya:localhost.",
+      "body": "Rollback applied to v2.13.2. Final replay: 0/5 errors. Decision recorded against evidence eeb57df30b82c52c5cad84287221f7ca1873925f054c7ff78347b5ed74c76e52 by @switch-mattermost-dcc3d422-2738-4edf-8aa4-e6f52879adca-priya:localhost.",
       "kind": "recovery",
-      "previous_hash": "127585ba6d2572a48187881055d37109421172c483324d87174300102b4ba78e",
-      "hash": "b7906eadeb3d1072bdc5d986c93f7f288fa87a04ce30286117cb18dc684c6cf7"
+      "previous_hash": "36bf9809e15fcbbbe449f4a4e93da2354ebf8076b405237f33c307c0bf9bdfaf",
+      "hash": "3fcfe8cd55f31b5342585cf6afd25279c77a56a555f6ca7b6e68ba2992fe942c"
     }
   ]
 }

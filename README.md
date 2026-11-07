@@ -6,7 +6,7 @@
 
 Checkout `v2.14.0` fails on two of five executable carts. A human reports the incident in a private Switch Mattermost room. Proofroom Signal reproduces it, Proofroom Release tests the allowlisted rollback, and a real Codex CLI agent independently reviews the source. The release gate refuses an unauthorized sign-off and only promotes `v2.13.2` after the named on-call human approves the **exact SHA-256 of the current canary evidence** in the same room. The companion UI streams the proof and audit trail live.
 
-**[Watch the recorded Switch demo](demo/proofroom-switch-demo.mp4)** · [Submission copy](submission/packet.md) · [Prior art](submission/prior-art.md)
+**[Watch the recorded Switch demo](demo/proofroom-switch-demo.mp4)** · [Submission copy](submission/packet.md) · [Prior art](submission/prior-art.md) · [Public repository](https://github.com/Vishwa-docs/proofroom-switch)
 
 ## What is real in the demo
 
@@ -33,6 +33,8 @@ flowchart LR
 ```
 
 The room contains the release rules and shared message history. The engine owns the state transition; conversational agents cannot bypass the five checks or the named-human approval. The UI is read-only in Switch mode. See [the live room template](switch/live-room.yaml) and [the Console template](switch/proofroom.template.yaml).
+
+Every incident gets a fresh ID, so an approval hash from an earlier incident cannot be reused. The bridge persists per-agent Switch event cursors locally for reconnects and restarts.
 
 ## Try the workflow without Switch
 
@@ -70,6 +72,7 @@ For a Switch Console managed Codex agent, the alternative [Console template](swi
 python3 -m pip install -r requirements-dev.txt
 python3 -m pytest -q
 python3 -m compileall -q gatehouse scripts
+python3 scripts/verify_evidence.py submission/live-evidence.json
 ```
 
 The tests cover the regression, authorized and unauthorized approvals, candidate allowlisting, evidence integrity, and decision integrity. For a live run, inspect `/api/state` and `/api/evidence`; `audit_valid` must be `true`.
@@ -77,6 +80,8 @@ The tests cover the regression, authorized and unauthorized approvals, candidate
 ## Record your own demo
 
 `scripts/record_demo.py` is an optional local recorder for the same flow. It needs a clean state, a running Switch + Mattermost deployment, Playwright Chromium, FFmpeg, and two local demo accounts. It writes browser recordings to `demo/raw/` and produces `demo/proofroom-switch-demo.mp4`. It does not submit anything. The included video was captured from a live Switch room, not a UI-only simulation.
+
+Run `python3 scripts/package_submission.py` after committing your changes to create the zip packet from tracked files. It excludes the local `.env`, runtime state, Switch cursors, and raw browser recordings.
 
 ## Limits
 

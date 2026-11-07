@@ -11,6 +11,7 @@ import urllib.error
 import urllib.parse
 import urllib.request
 import uuid
+from pathlib import Path
 
 from .engine import GateError
 
@@ -31,7 +32,24 @@ class SwitchBridge:
         self.enabled = bool(self.room and self.approver and all(investigator) and all(all(pair) for pair in self.agents.values()))
         self.connected = {role: False for role in self.agents}
         self.room_context = {}
+        self.cursor_path = Path(os.getenv("SWITCH_CURSOR_FILE", Path(__file__).resolve().parent.parent / ".switch-cursors.json"))
+        self.cursor_lock = threading.Lock()
+        self.cursors = {}
+        if self.cursor_path.is_file():
+            try:
+                saved = json.loads(self.cursor_path.read_text())
+                if saved.get("room_id") == self.room:
+                    self.cursors = saved.get("roles", {})
+            except (OSError, ValueError):
+                pass
         self.outbox = queue.Queue()
+
+    def _save_cursor(self, role: str, cursor: int):
+        with self.cursor_lock:
+            self.cursors[role] = cursor
+            temp = self.cursor_path.with_suffix(".tmp")
+            temp.write_text(json.dumps({"room_id": self.room, "roles": self.cursors}))
+            os.replace(temp, self.cursor_path)
 
     def _request(self, agent_id: str, key: str, method: str, path: str, body=None, connection_id=None):
         headers = {"Authorization": f"Bearer {key}"}
@@ -74,7 +92,7 @@ class SwitchBridge:
     def _listen_loop(self, role: str):
         agent_id, key = self.agents[role]
         connection_id = str(uuid.uuid4())
-        cursor = None
+        cursor = self.cursors.get(role)
         while True:
             stop_beat = threading.Event()
             try:
@@ -104,9 +122,10 @@ class SwitchBridge:
                         if not line:
                             if "data" in frame:
                                 data = json.loads(frame["data"])
+                                self._handle(role, frame.get("event", ""), data)
                                 if "id" in frame:
                                     cursor = int(frame["id"])
-                                self._handle(role, frame.get("event", ""), data)
+                                    self._save_cursor(role, cursor)
                             frame = {}
                         elif line.startswith("id:"):
                             frame["id"] = line[3:].strip()

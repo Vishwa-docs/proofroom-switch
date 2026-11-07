@@ -21,8 +21,9 @@ Switch `0.31.0`; built-in Mattermost bridge; Python 3 standard library HTTP serv
 
 ## Submission assets
 
-- Repository/project: this folder, or `submission/proofroom-submission.zip`.
-- Demo video: `demo/proofroom-switch-demo.mp4` (live Switch + Mattermost flow).
+- Public repository: [github.com/Vishwa-docs/proofroom-switch](https://github.com/Vishwa-docs/proofroom-switch).
+- Downloadable packet: `submission/proofroom-submission.zip` in the local project folder.
+- Demo video: [proofroom-switch-demo.mp4](https://github.com/Vishwa-docs/proofroom-switch/blob/main/demo/proofroom-switch-demo.mp4) (live Switch + Mattermost flow, captioned and narrated).
 - Setup and architecture: `README.md`.
 - Switch templates: `switch/live-room.yaml` and `switch/proofroom.template.yaml`.
 - Tests: `tests/test_engine.py`.

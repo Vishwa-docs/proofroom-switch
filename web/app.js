@@ -13,6 +13,7 @@ function render(){
   if(!state)return;
   const phase=state.phase, proof=state.proof, mode=state.switch.demo_mode;
   $('room-name').textContent=state.switch.room_name;
+  $('incident-number').textContent=state.incident_id?.replace('INC-','')||'—';
   $('phase-seal').textContent=phase.replaceAll('_',' ').toUpperCase();
   $('active-release').textContent=state.active_version;
   $('error-count').textContent=state.baseline.length?`${state.baseline.filter(x=>!x.ok).length} → ${proof?.canary_errors??'—'}`:'—';

@@ -53,3 +53,22 @@ def test_proof_and_decision_digest_detect_tampering(tmp_path):
     assert engine.verify_chain()
     engine.state["decision"]["target"] = "v9.0.0"
     assert not engine.verify_chain()
+
+
+def test_audit_rejects_state_that_disagrees_with_signed_decision(tmp_path):
+    engine = IncidentEngine(tmp_path / "state.json")
+    engine.trigger()
+    proof = engine.prepare()["proof"]
+    engine.approve(proof["sha256"], "@priya:demo", "@priya:demo")
+    engine.state["active_version"] = "v2.14.0"
+    assert not engine.verify_chain()
+
+
+def test_evidence_hash_cannot_be_reused_for_a_later_incident(tmp_path):
+    engine = IncidentEngine(tmp_path / "state.json")
+    engine.trigger()
+    first = engine.prepare()["proof"]["sha256"]
+    engine.reset()
+    engine.trigger()
+    second = engine.prepare()["proof"]["sha256"]
+    assert first != second

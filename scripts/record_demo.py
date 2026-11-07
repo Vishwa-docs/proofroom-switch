@@ -110,6 +110,7 @@ def main():
         sam_storage = warm_login(browser, "sam", stack["MATTERMOST_SAM_PASSWORD"])
         chat_context = browser.new_context(viewport={"width": 1280, "height": 900}, storage_state=sam_storage, record_video_dir=str(DEMO / "raw"), record_video_size={"width": 1280, "height": 900})
         dash_context = browser.new_context(viewport={"width": 1440, "height": 900}, record_video_dir=str(DEMO / "raw"), record_video_size={"width": 1440, "height": 900})
+        record_start = time.monotonic()
         chat = chat_context.new_page()
         dash = dash_context.new_page()
         chat.goto(f"{MM}/proofroom/channels/{project['SWITCH_ROOM_NAME']}", wait_until="domcontentloaded")
@@ -117,6 +118,7 @@ def main():
         chat.wait_for_timeout(3500)
         dash.wait_for_timeout(500)
         start = time.monotonic()
+        lead_in = start - record_start
         def mark(caption):
             marks.append((time.monotonic() - start, caption))
         mark("PROOFROOM  •  A real Switch room and a live release gate")
@@ -165,7 +167,7 @@ def main():
         "drawbox=x=0:y=847:w=2000:h=53:color=0x14261f@0.88:t=fill,"
         "subtitles=demo/captions.srt:force_style='FontName=Arial,FontSize=11,PrimaryColour=&H00FFFFFF&,OutlineColour=&H00201010&,BorderStyle=1,Outline=1,Alignment=2,MarginV=12'[v]"
     )
-    subprocess.run(["ffmpeg", "-y", "-loglevel", "error", "-i", chat_path, "-i", dash_path, "-filter_complex", filter_graph, "-map", "[v]", "-c:v", "libx264", "-preset", "veryfast", "-crf", "20", "-pix_fmt", "yuv420p", "-movflags", "+faststart", str(output)], cwd=ROOT, check=True)
+    subprocess.run(["ffmpeg", "-y", "-loglevel", "error", "-ss", f"{lead_in:.3f}", "-i", chat_path, "-ss", f"{lead_in:.3f}", "-i", dash_path, "-filter_complex", filter_graph, "-map", "[v]", "-c:v", "libx264", "-preset", "veryfast", "-crf", "20", "-pix_fmt", "yuv420p", "-movflags", "+faststart", str(output)], cwd=ROOT, check=True)
     print(f"Recorded {end:.1f}s live Switch demo: {output}")
 
 

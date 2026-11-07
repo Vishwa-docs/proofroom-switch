@@ -4,6 +4,7 @@ import hashlib
 import json
 import os
 import threading
+import uuid
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -75,7 +76,7 @@ class IncidentEngine:
             failures = sum(not item["ok"] for item in baseline)
             if not failures:
                 raise GateError("the current release did not reproduce a failure")
-            self.state.update({"phase": "investigating", "incident_id": "INC-2048", "baseline": baseline})
+            self.state.update({"phase": "investigating", "incident_id": f"INC-{uuid.uuid4().hex[:8].upper()}", "baseline": baseline})
             self._event("Signal Agent", f"Checkout alert: {failures}/{len(baseline)} replay cases fail on v2.14.0. Null discounts trigger TypeError. @proofroom-investigator REVIEW the source and challenge this diagnosis. @proofroom-release PREPARE the canary in this room.", "investigation")
             return self.snapshot()
 
@@ -139,8 +140,16 @@ class IncidentEngine:
         proof = self.state.get("proof")
         if proof and digest({k: v for k, v in proof.items() if k != "sha256"}) != proof.get("sha256"):
             return False
+        if proof and (proof["baseline"] != self.state["baseline"] or proof["incident_id"] != self.state["incident_id"]):
+            return False
         decision = self.state.get("decision")
         if decision and (digest({k: v for k, v in decision.items() if k != "hash"}) != decision.get("hash") or not proof or decision["evidence_sha256"] != proof["sha256"]):
+            return False
+        if decision and (self.state["phase"] != "recovered" or self.state["active_version"] != decision["target"] or decision["target"] != proof["to"]):
+            return False
+        if proof and not decision and (self.state["phase"] != "awaiting_approval" or self.state["active_version"] != proof["from"]):
+            return False
+        if not proof and self.state["phase"] not in {"idle", "investigating"}:
             return False
         previous = "0" * 64
         for event in self.state["events"]:

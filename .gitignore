@@ -1,5 +1,6 @@
 .env
 state.json
+.switch-cursors.json
 __pycache__/
 *.pyc
 .pytest_cache/
