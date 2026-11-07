@@ -1,0 +1,176 @@
+{
+  "phase": "recovered",
+  "active_version": "v2.13.2",
+  "incident_id": "INC-2048",
+  "baseline": [
+    {
+      "case": "regular",
+      "ok": true,
+      "response": {
+        "cart_id": "regular",
+        "total": "24.00"
+      }
+    },
+    {
+      "case": "member",
+      "ok": true,
+      "response": {
+        "cart_id": "member",
+        "total": "45.00"
+      }
+    },
+    {
+      "case": "guest",
+      "ok": false,
+      "error": "TypeError"
+    },
+    {
+      "case": "gift",
+      "ok": false,
+      "error": "TypeError"
+    },
+    {
+      "case": "promo",
+      "ok": true,
+      "response": {
+        "cart_id": "promo",
+        "total": "60.00"
+      }
+    }
+  ],
+  "proof": {
+    "incident_id": "INC-2048",
+    "from": "v2.14.0",
+    "to": "v2.13.2",
+    "baseline": [
+      {
+        "case": "regular",
+        "ok": true,
+        "response": {
+          "cart_id": "regular",
+          "total": "24.00"
+        }
+      },
+      {
+        "case": "member",
+        "ok": true,
+        "response": {
+          "cart_id": "member",
+          "total": "45.00"
+        }
+      },
+      {
+        "case": "guest",
+        "ok": false,
+        "error": "TypeError"
+      },
+      {
+        "case": "gift",
+        "ok": false,
+        "error": "TypeError"
+      },
+      {
+        "case": "promo",
+        "ok": true,
+        "response": {
+          "cart_id": "promo",
+          "total": "60.00"
+        }
+      }
+    ],
+    "canary": [
+      {
+        "case": "regular",
+        "ok": true,
+        "response": {
+          "cart_id": "regular",
+          "total": "24.00"
+        }
+      },
+      {
+        "case": "member",
+        "ok": true,
+        "response": {
+          "cart_id": "member",
+          "total": "45.00"
+        }
+      },
+      {
+        "case": "guest",
+        "ok": true,
+        "response": {
+          "cart_id": "guest",
+          "total": "18.00"
+        }
+      },
+      {
+        "case": "gift",
+        "ok": true,
+        "response": {
+          "cart_id": "gift",
+          "total": "34.00"
+        }
+      },
+      {
+        "case": "promo",
+        "ok": true,
+        "response": {
+          "cart_id": "promo",
+          "total": "60.00"
+        }
+      }
+    ],
+    "checks": {
+      "five_cases_replayed": true,
+      "zero_candidate_errors": true,
+      "no_healthy_regression": true,
+      "candidate_allowlisted": true,
+      "no_schema_change": true
+    },
+    "baseline_errors": 2,
+    "canary_errors": 0,
+    "sha256": "4fe4c0b44065c5676cfdc53fbabef71f4c514478696ead2a4cf961aeeac385a3"
+  },
+  "decision": {
+    "actor_id": "@switch-mattermost-dcc3d422-2738-4edf-8aa4-e6f52879adca-priya:localhost",
+    "evidence_sha256": "4fe4c0b44065c5676cfdc53fbabef71f4c514478696ead2a4cf961aeeac385a3",
+    "at": "2026-11-07T17:43:00+00:00",
+    "action": "promote_allowlisted_release",
+    "target": "v2.13.2",
+    "hash": "93c5ac4473cf777be7314cb06ae41fef4521c0f02ccfc50f0fec6fe3ef97d15c"
+  },
+  "events": [
+    {
+      "at": "2026-11-07T17:42:33+00:00",
+      "speaker": "Signal Agent",
+      "body": "Checkout alert: 2/5 replay cases fail on v2.14.0. Null discounts trigger TypeError. @proofroom-investigator REVIEW the source and challenge this diagnosis. @proofroom-release PREPARE the canary in this room.",
+      "kind": "investigation",
+      "previous_hash": "0000000000000000000000000000000000000000000000000000000000000000",
+      "hash": "37c3659d1d0b0eb51e1dc1b04f6ba304c3f0dabc95ade5671b0cb90c71bc856c"
+    },
+    {
+      "at": "2026-11-07T17:42:33+00:00",
+      "speaker": "Release Agent",
+      "body": "Canary passed: 2/5 errors \u2192 0/5; 3 healthy carts unchanged. All 5 policy checks passed. Evidence SHA-256: 4fe4c0b44065c5676cfdc53fbabef71f4c514478696ead2a4cf961aeeac385a3. Authorized on-call: reply APPROVE 4fe4c0b44065c5676cfdc53fbabef71f4c514478696ead2a4cf961aeeac385a3 in this Switch room.",
+      "kind": "proof",
+      "previous_hash": "37c3659d1d0b0eb51e1dc1b04f6ba304c3f0dabc95ade5671b0cb90c71bc856c",
+      "hash": "4c6b3f1256bf4d9831687953b3c1e77f3119495038c67cc893e7d1a311481bd4"
+    },
+    {
+      "at": "2026-11-07T17:42:46+00:00",
+      "speaker": "Codex Investigator",
+      "body": "Exact cause: v2.14.0 passes `None` discounts directly to `Decimal()`, raising `TypeError` for the `guest` and `gift` fixtures. v2.13.2 normalizes `None` to `\"0.00\"`.\n\nv2.13.2 is a safe rollback under all five deterministic checks: all five cases replay, zero candidate errors, no regression in the three previously healthy cases, the candidate is allowlisted, and the schema is unchanged.\n\nResidual risk: the five fixtures do not cover every possible production cart or integration behavior.",
+      "kind": "review",
+      "previous_hash": "4c6b3f1256bf4d9831687953b3c1e77f3119495038c67cc893e7d1a311481bd4",
+      "hash": "127585ba6d2572a48187881055d37109421172c483324d87174300102b4ba78e"
+    },
+    {
+      "at": "2026-11-07T17:43:00+00:00",
+      "speaker": "Release Agent",
+      "body": "Rollback applied to v2.13.2. Final replay: 0/5 errors. Decision recorded against evidence 4fe4c0b44065c5676cfdc53fbabef71f4c514478696ead2a4cf961aeeac385a3 by @switch-mattermost-dcc3d422-2738-4edf-8aa4-e6f52879adca-priya:localhost.",
+      "kind": "recovery",
+      "previous_hash": "127585ba6d2572a48187881055d37109421172c483324d87174300102b4ba78e",
+      "hash": "b7906eadeb3d1072bdc5d986c93f7f288fa87a04ce30286117cb18dc684c6cf7"
+    }
+  ]
+}

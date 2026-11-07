@@ -1,0 +1,10 @@
+.env
+state.json
+__pycache__/
+*.pyc
+.pytest_cache/
+demo/frames/
+demo/raw/
+demo/narration.aiff
+submission/*.zip
+

@@ -1,0 +1,36 @@
+version: 1
+params:
+  room_name:
+    type: string
+    description: Name for the release room
+    default: proofroom-checkout-release
+  approver:
+    type: user
+    description: Human on-call approver
+  collaborator:
+    type: user
+    description: Second human teammate
+  bridge:
+    type: bridge
+    default: [Mattermost, $first]
+room:
+  name: "{room_name}"
+  description: Evidence-bound checkout release decision
+  bridge: "{bridge}"
+  channel_type: channel_private
+  agents: [proofroom-signal, proofroom-release, proofroom-investigator]
+  users: ["{approver}", "{collaborator}"]
+  instructions: |
+    Keep one thread per incident. Signal reproduces checkout errors, Codex
+    independently reviews the source, Release replays the canary, and only
+    the named human approves. Never execute an arbitrary shell command or
+    change a database schema. Approval must be APPROVE followed by the exact
+    current 64-character evidence SHA-256. Post findings in this room.
+  docs:
+    - name: Release policy
+      description: Deterministic guardrails
+      instructions: Read before proposing a release.
+      content: |
+        v2.13.2 is the only allowlisted rollback. Replay five checkout
+        payloads; require zero candidate errors and unchanged healthy totals.
+        The approver must match the configured Switch participant ID.

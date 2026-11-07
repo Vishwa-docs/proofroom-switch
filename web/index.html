@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Proofroom — release decisions with receipts</title>
+  <link rel="stylesheet" href="/app.css">
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="rail">
+      <div class="brand"><span class="brand-mark">P<span></span></span><span>proofroom<span class="brand-dot">.</span></span></div>
+      <div class="rail-label">WORKSPACE</div>
+      <nav><a class="nav-active" href="#incident"><span class="nav-icon">⌁</span> Incident room <span class="nav-count">1</span></a><a href="#evidence"><span class="nav-icon">▤</span> Evidence</a><a href="#audit"><span class="nav-icon">◈</span> Audit trail</a></nav>
+      <div class="rail-bottom"><div class="switch-indicator"><span id="switch-dot" class="status-dot"></span><div><strong id="switch-status">Local replay</strong><small id="switch-detail">Switch bridge not configured</small></div></div><div class="rail-foot">BUILT ON <b>SWITCH</b><span> / </span> 2026</div></div>
+    </aside>
+    <main id="incident" class="main">
+      <header class="topbar"><div><span class="crumb">OPERATIONS</span><span class="slash">/</span><span class="crumb-current">INC-2048</span></div><div class="top-right"><span class="live-pulse"></span> LIVE INCIDENT VIEW <span class="top-divider"></span> <span id="clock"></span></div></header>
+      <section class="masthead"><div class="eyebrow"><span class="eyebrow-line"></span> RELEASE SAFETY ROOM <span class="eyebrow-line"></span></div><div class="heading-row"><div><h1>Every release decision<br><em>needs a receipt.</em></h1><p>Two agents investigate and verify. A human signs the exact canary evidence in a shared Switch room.</p></div><div class="incident-seal"><span>INCIDENT</span><strong>2048</strong><small id="phase-seal">STANDBY</small></div></div></section>
+      <section class="status-strip" aria-label="Incident status"><div><span class="metric-label">ACTIVE RELEASE</span><strong id="active-release">v2.14.0</strong></div><div><span class="metric-label">ERRORS / 5 CASES</span><strong id="error-count">—</strong></div><div><span class="metric-label">CANARY</span><strong id="canary-state">NOT RUN</strong></div><div><span class="metric-label">DECISION</span><strong id="decision-state">PENDING</strong></div></section>
+      <div class="workspace"><section class="room-pane"><div class="section-head"><div><span class="section-kicker">01 / TEAM COORDINATION</span><h2>Incident room</h2></div><span class="members">◉ <b>3</b> AGENTS</span></div><div class="room-meta"><span class="room-hash">#</span><span id="room-name">checkout-release</span><span class="room-meta-note">Shared history · rules · decisions</span></div><div id="messages" class="messages" aria-live="polite"></div><div class="room-actions" id="actions"></div><div class="room-caption" id="room-caption">A reproducible local replay is available for the demo. Connect Switch to receive chat messages and record a real approval.</div></section>
+      <aside id="evidence" class="evidence-pane"><div class="section-head"><div><span class="section-kicker">02 / DETERMINISTIC GATE</span><h2>Proof ledger</h2></div><span class="ledger-icon">◈</span></div><div class="proof-hero"><span class="proof-label">CANDIDATE RELEASE</span><div class="version-flow"><span id="from-version">v2.14.0</span><span class="arrow">→</span><strong>v2.13.2</strong></div><p>Replay five checkout payloads against both executable versions. Healthy responses must remain identical.</p></div><div class="rule-list" id="rule-list"></div><div class="digest-box"><div class="digest-head"><span>EVIDENCE SHA-256</span><button id="copy-digest" title="Copy digest">COPY</button></div><code id="digest">Awaiting canary replay</code></div><div class="evidence-bottom"><div><span>APPROVAL POLICY</span><strong>Exact digest + named human</strong></div><div><span>EXECUTION SCOPE</span><strong>Allowlisted local release</strong></div></div></aside></div>
+      <section id="audit" class="audit"><div><span class="section-kicker">03 / INDEPENDENT VERIFICATION</span><h2>Decision trail</h2></div><div id="audit-content" class="audit-content"><span class="audit-empty">No decision recorded yet.</span></div></section>
+      <footer>PROOFROOM / OPEN SOURCE HACKATHON BUILD <span>MADE FOR FLIP THE SWITCH · NOVEMBER 2026</span></footer>
+    </main>
+  </div>
+  <script src="/app.js"></script>
+</body>
+</html>
+

@@ -1,0 +1,64 @@
+version: 1
+params:
+  bridge:
+    type: bridge
+    description: Messaging app where the room lives
+    default: [Mattermost, $first]
+  approver:
+    type: user
+    description: On-call human with authority to approve a verified release
+  provider:
+    type: provider
+    description: AI coding agent used for independent investigation
+    default: [codex, claude, opencode]
+  location:
+    type: location
+    default: local
+    input: advanced
+  directory:
+    type: directory
+    default: "{$agents_dir}/{agent}"
+    input: advanced
+agents:
+  - name: proofroom-investigator
+    description: AI investigator that reviews the actual checkout failure and challenges the canary evidence
+    addressing: anyone
+    provider: "{provider}"
+    location: "{location}"
+    directory: "{directory}"
+    instructions: |
+      You are the independent AI investigator in the Proofroom release room.
+      Ask @proofroom-signal for a fresh checkout failure replay. Inspect the
+      executable source and the evidence file. Challenge any missing cases,
+      mismatched totals, or unsupported claims in the same room. You may
+      recommend a release, but you never approve or execute it. Only the
+      named human on-call participant can approve the exact SHA-256 digest.
+room:
+  name: "proofroom-checkout-release"
+  description: Checkout incident, independent AI investigation, deterministic canary and human release gate
+  bridge: "{bridge}"
+  channel_type: channel_private
+  agents: ["proofroom-investigator", "proofroom-signal", "proofroom-release"]
+  users: ["{$creator}", "{approver}"]
+  instructions: |
+    This is the release decision room for checkout. Use one incident thread.
+    Proofroom Signal detects and reproduces failures. The Codex investigator
+    challenges the cause and evidence. Proofroom Release runs a deterministic
+    five-case canary and enforces the final gate. No production shell command,
+    database schema change, or unapproved release is permitted. A human
+    approves only with the exact message APPROVE <64-character evidence SHA-256>.
+    Keep all findings, evidence and decisions in this room so every person and
+    agent receives the same context. State failures explicitly.
+  docs:
+    - name: "Release policy"
+      description: Deterministic rules for checkout rollback
+      instructions: "Read before proposing or approving a release."
+      content: |
+        Candidate must be v2.13.2, all five checkout cases must replay,
+        candidate errors must be zero, healthy response totals must be
+        identical, and database schema must not change. Approval binds to
+        the current canary evidence SHA-256 and the named on-call identity.
+kickoff: |
+  @proofroom-investigator: introduce your role and ask @proofroom-signal
+  to investigate the checkout regression. Keep the review in this room.
+
